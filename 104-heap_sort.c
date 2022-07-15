@@ -1,88 +1,70 @@
 #include "sort.h"
-
 /**
- * heap_sort - sorts array of integers in ascending order
- * using Heap Sort algorithm
- * @array: list of integers
- * @size: size of array
- */
+ * check_tree - swiftdown check
+ * @array: pointer to array
+ * @size: size of the pointer
+ * @size_init: original size of the array
+ * @i: index as a root of the tree
+ *
+**/
+void check_tree(int *array, size_t size_init, size_t size, size_t i)
+{
+
+	int n, branch1, branch2;
+	size_t br1, br2;
+
+	br1 = i * 2 + 1;
+	br2 = br1 + 1;
+	branch1 = array[br1];
+	branch2 = array[br2];
+	if (((br1 < size) && (br2 < size) &&
+		(branch1 >= branch2 && branch1 > array[i]))
+		|| ((br1 == size - 1) && branch1 > array[i]))
+	{
+		n = array[i];
+		array[i] = branch1;
+		array[br1] = n;
+		print_array(array, size_init);
+	}
+	else if ((br1 < size) && (br2 < size) &&
+		(branch2 > branch1 && branch2 > array[i]))
+	{
+		n = array[i];
+		array[i] = branch2;
+		array[br2] = n;
+		print_array(array, size_init);
+	}
+	if (br1 < size - 1)
+		check_tree(array, size_init, size, br1);
+	if (br2 < size - 1)
+		check_tree(array, size_init, size, br2);
+}
+/**
+ * heap_sort - sorts an array of integers
+ * in ascending order using the Heap
+ * sort algorithm
+ * @array: pointer to array
+ * @size: size of the pointer
+ *
+**/
 void heap_sort(int *array, size_t size)
 {
-	int high;
+	size_t i, size_init = size;
+	int n;
 
-	heapify(array, size);
-	high = size - 1;
-
-	while (high > 0)
+	if (!array)
+		return;
+	for (i = 0; i < size / 2 ; i++)
 	{
-		swap(array, array[high], array[0]);
-		print_array(array, size);
-		high = size - 1;
-		printf("BEFORE INITIAL SIFT_DOWN\n");
-		sift_down(array, 0, high, size);
+		check_tree(array, size_init, size, size / 2 - 1 - i);
 	}
-}
-
-/**
- * heapify - turns array into heap
- * @array: list of integers
- * @size: size of array
- */
-void heapify(int *array, size_t size)
-{
-	int low;
-
-	low = (size - 2) / 2;
-
-	while (low >= 0)
+	for (i = 0; i < size_init - 1; i++)
 	{
-		printf("BEFORE HEAPIFY SIFT_DOWN\n");
-		sift_down(array, low, size - 1, size);
-		low = low - 1;
+		n = array[0];
+		array[0] = array[size - 1 - i];
+		array[size - 1 - i] = n;
+		print_array(array, size_init);
+		check_tree(array, size_init, size - i - 1, 0);
 	}
-}
 
-/**
- * sift_down - sorts heap so parent values are larger than child values
- * @array: list of integers
- * @low: start of array
- * @high: end of array
- */
-void sift_down(int *array, int low, int high, size_t size)
-{
-	int root;
-	int child;
-
-	root = low;
-
-	while (root * 2 + 1 <= high)
-	{
-		child = root * 2 + 1;
-		if (child + 1 <= high && array[child] < array[child + 1])
-			child = child + 1;
-		if (array[root] < array[child])
-		{
-			printf("BEFORE SIFT_DOWN SWAP\n");
-			swap(array, array[root], array[child]);
-			print_array(array, size);
-			root = child;
-		}
-		else
-			return;
-	}
-}
-
-/**
- * swap - swaps two values in array
- * @array: list of integers
- * @i: index position of first value
- * @j; index position of second value
- */
-void swap(int *array, int i, int j)
-{
-	int temp;
-
-	temp = array[i];
-	array[i] = array[j];
-	array[j] = temp;
 }
