@@ -1,99 +1,64 @@
 #include "sort.h"
+
 /**
- * swap_head - swaps a node at the beggining of the list
- * @list: Doubly linked list with nodes to sort acording to number n.
- * @aux: auxiliar node to compare
+ * swap - swaps two nodes
+ * @head: head of the list
+ * @node1: first node to sort
+ * @node2: second node to sort
  */
-void swap_head(listint_t **list, listint_t *aux)
+void swap(listint_t **head, listint_t *node1, listint_t *node2)
 {
-	aux->prev->next = aux->next;
-	if (aux->next)
-		aux->next->prev = aux->prev;
-	aux->next = aux->prev;
-	aux->prev = aux->prev->prev;
-	aux->next->prev = aux;
-	*list = aux;
+	listint_t *prev, *next;
+
+	prev = node1->prev;
+	next = node2->next;
+
+	if (prev != NULL)
+		prev->next = node2;
+	else
+		*head = node2;
+	node1->prev = node2;
+	node1->next = next;
+	node2->prev = prev;
+	node2->next = node1;
+	if (next)
+		next->prev = node1;
 }
 /**
- * swap_middle - swaps a node at the middle of the list
- * @aux: auxiliar node to compare
- */
-void swap_middle(listint_t *aux)
-{
-	aux->prev->next = aux->next;
-	aux->next->prev = aux->prev;
-	aux->prev->prev->next = aux;
-	aux->next = aux->prev;
-	aux->prev = aux->next->prev;
-	aux->next->prev = aux;
-}
-/**
- * swap_tail - swaps a node at the end of the list
- * @aux: auxiliar node to compare
- */
-void swap_tail(listint_t *aux)
-{
-	aux->prev->next = aux->next;
-	aux->next = aux->prev;
-	aux->prev->prev->next = aux;
-	aux->prev = aux->next->prev;
-	aux->next->prev = aux;
-}
-/**
- * evaluate_swap - checks the position to do the swap
- * @list: Doubly linked list with nodes to sort acording to number n.
- * @aux: auxiliar node to compare
- */
-void evaluate_swap(listint_t **list, listint_t *aux)
-{
-	if (!aux->prev->prev)
-		swap_head(list, aux);
-	else if (aux->prev->prev && aux->next)
-		swap_middle(aux);
-	else if (!aux->next)
-		swap_tail(aux);
-}
-/**
- * cocktail_sort_list - Cocktail Sort is a variation of Bubble sort.
- * The Bubble sort algorithm always traverses elements from left and
- * moves the largest element to its correct position in first iteration
- * and second largest in second iteration and so on. Cocktail Sort traverses
- * through a given array in both directions alternatively.
- * @list: Doubly linked list with nodes to sort acording to number n.
+ * cocktail_sort_list - sorts a list using the cocktail sort algorithm
+ * @list: list to sort
  */
 void cocktail_sort_list(listint_t **list)
 {
-	listint_t *aux = NULL, *tmp;
-	int swap_flag = 1;
+	listint_t *head;
+	int flag = 0;
 
-	if (!list || !(*list)->next)
+	if (!list || !*list || !(*list)->next)
 		return;
-	aux = tmp = (*list)->next;
-	while (swap_flag)
-	{
-		aux = tmp, swap_flag = 0;
-		while (aux)
+
+	do {
+		for (head = *list; head->next != NULL; head = head->next)
 		{
-			if (aux->prev && aux->n < aux->prev->n)
+			if (head->n > head->next->n)
 			{
-				evaluate_swap(list, aux);
-				print_list(*list), swap_flag = 1;
+				swap(list, head, head->next);
+				print_list(*list);
+				flag = 1;
+				head = head->prev;
 			}
-			if (aux->next != NULL)
-				aux = aux->next;
-			else
-				break;
 		}
-		aux = aux->prev;
-		while (aux->prev)
+		if (flag == 0)
+			break;
+		flag = 0;
+		for (; head->prev != NULL; head = head->prev)
 		{
-			if (aux->prev && aux->prev->n > aux->n)
+			if (head->n < head->prev->n)
 			{
-				evaluate_swap(list, aux);
-				print_list(*list), swap_flag = 1;
+				swap(list, head->prev, head);
+				print_list(*list);
+				flag = 1;
+				head = head->next;
 			}
-			else if (aux->prev)
-				aux = aux->prev;
 		}
-	}
+	} while (flag == 1);
 }
