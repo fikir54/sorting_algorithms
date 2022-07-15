@@ -1,70 +1,78 @@
-#include <stddef.h>
 #include "sort.h"
 /**
-  * partition - partition the array
-  * @array: array of integers
-  * @low: lowest index
-  * @high: highest index
-  * @size: size of the array
-  * Return: return i, the lowest index
-  */
-
-int partition(int *array, int low, int high, size_t size)
+ * swap - swaps values
+ * @a: first val
+ * @b: second value
+ */
+void swap(int *a, int *b)
 {
-	int pivot = array[high], i = low, j;
-
-	for (j = low; j <= high - 1; j++)
+	int t = *a;
+	*a = *b;
+	*b = t;
+}
+/**
+ * partition - partitions the array for sorting
+ * @arr: array of ints
+ * @low: the lower ind
+ * @high: the higher ind
+ *
+ * Return: parted array
+ */
+int partition(int arr[], int low, int high)
+{
+	int j;
+	int pivot = arr[high];
+	int i = low;
+	static int size, c;
+	if (c == 0)
 	{
-		if (array[j] <= pivot)
+		size = high + 1;
+		c++;
+	}
+	for (j = low; j < high; j++)
+	{
+		if (arr[j] <= pivot)
 		{
-			swap(&array[i], &array[j]);
 			if (i != j)
-				print_array(array, size);
+			{
+				swap(&i, &j);
+				print_array(arr, size);
+			}
 			i++;
 		}
 	}
-	swap(&array[i], &array[high]);
-	if (i != j)
-		print_array(array, size);
+	if (arr[i] < arr[high])
+	{
+		swap(&i, &high);
+		print_array(arr, size);
+	}
 	return (i);
 }
 /**
-  * array_quick_sort - .
-  * @array: array of integers
-  * @left: lowest index
-  * @right: highest index
-  * @size: size of array
-  */
-void array_quick_sort(int *array, int left, int right, size_t size)
+ * quickSort - sorts the array
+ * @arr: the array
+ * @low: lower array index
+ * @pivot: high ind
+ */
+void quickSort(int arr[], int low, int pivot)
 {
-	int pivot;
-
-	if (left < right)
+	int pi;
+	if (low < pivot)
 	{
-		pivot = partition(array, left, right, size);
-		array_quick_sort(array, left, (pivot - 1), size);
-		array_quick_sort(array, (pivot + 1), right, size);
+		/* pi is partitioning index, arr[p] is now*/
+		pi = partition(arr, low, pivot);
+		quickSort(arr, low, pi - 1);
+		quickSort(arr, pi + 1, pivot);
 	}
 }
 /**
-  * quick_sort - sort array of integers using insertion sort
-  * @array: array to sort
-  * @size: size of array
-  */
+ * quick_sort - sorts the array
+ * @array: the array
+ * @size: arr size
+ */
 void quick_sort(int *array, size_t size)
 {
-	if (size < 2)
-		return;
-	array_quick_sort(array, 0, size - 1, size);
-}
-/**
-  * swap - swaps two elements
-  * @a: first element
-  * @b: second element
-  */
-void swap(int *a, int *b)
-{
-	int temp = *a;
-	*a = *b;
-	*b = temp;
+	if (size >= 2 && array)
+
+		quickSort(array, 0, size - 1);
 }
