@@ -1,49 +1,69 @@
 #include "sort.h"
-#include <stdio.h>
-#include <stdlib.h>
+/**
+ * merge - merges l and r arrays into original array
+ * @array: pointer to array
+ * @size: size of the array
+ * @l: pointer to left array
+ * @r: pointer to right array
+ **/
+void merge(int *array, int *l, int *r, size_t size)
+{
+	int i = 0, j = 0, k = 0;
+	int size_l, size_r;
 
-void merge(int arr[], int l, int m, int r)
-{
-int i, j, k;
-int n1 = m - l + 1;
-int n2 = r - m;
-// Create temp arrays
-int L[n1], R[n2];
-// Copy data to temp array
-for (i = 0; i < n1; i++)
-L[i] = arr[l + i];
-for (j = 0; j < n2; j++)
-R[j] = arr[m + 1+ j];
-// Merge the temp arrays
-i = 0;
-j = 0;
-k = l;
-while (i < n1 && j < n2)
-{
-if (L[i] <= R[j])
-{
-arr[k] = L[i];
-i++;
+	size_l = size / 2;
+	size_r = size - size_l;
+	printf("Merging...\n");
+	printf("[left]: ");
+	print_array(l, size_l);
+	printf("[right]: ");
+	print_array(r, size_r);
+
+	while (i < size_l && j < size_r)
+	{
+		if (l[i] < r[j])
+			array[k++] = l[i++];
+		else
+			array[k++] = r[j++];
+	}
+
+	while (i < size_l)
+		array[k++] = l[i++];
+
+	while (j < size_r)
+		array[k++] = r[j++];
+	printf("[Done]: ");
+	print_array(array, size);
 }
-else
+/**
+ * merge_sort - sorts an array of integers in ascending order using
+ * the Merge sort algorithm
+ * @array: pointer to array
+ * @size: size of the array
+ **/
+void merge_sort(int *array, size_t size)
 {
-arr[k] = R[j];
-j++;
-}
-k++;
-}
-// Copy the remaining elements of L[]
-while (i < n1)
-{
-arr[k] = L[i];
-i++;
-k++;
-}
-// Copy the remaining elements of R[]
-while (j < n2)
-{
-arr[k] = R[j];
-j++;
-k++;
-}
+	size_t mid = 0, i;
+	int left[1000];
+	int right[1000];
+
+	if (!array)
+		return;
+
+	if (size < 2)
+		return;
+
+	mid = size / 2;
+	/*left = (int*)malloc(sizeof(int) * mid);*/
+	/*right = (int*)malloc(sizeof(int) * (size - mid));*/
+
+	for (i = 0; i < mid; i++)
+		left[i] = array[i];
+
+	for (i = mid; i < size; i++)
+		right[i - mid] = array[i];
+
+	merge_sort(left, mid);
+	merge_sort(right, size - mid);
+	merge(array, left, right, size);
 }
